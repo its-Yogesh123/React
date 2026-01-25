@@ -1,7 +1,7 @@
-import { useContext } from "react";
-import {CartContext} from "../context/cart"
+import {CartContext,useCart} from "../context/cart"
 export const CartCard= (props)=>{
-    const cartContext = useContext(CartContext);
+    // const cartContext = useContext(CartContext);
+    const cartContext = useCart();  // cutom hook
     let total =cartContext.items.reduce((a,b)=> a+b.price,0);
     // if(cartContext.items)total=cartContext.items.reduce(item,0);
     return (

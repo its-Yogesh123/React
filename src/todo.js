@@ -15,7 +15,8 @@ import { CounterContext } from "./context/counter";
 import { useContext } from "react";
 import { ItemCard } from "./components/items";
 import { CartCard } from "./components/cart";
-
+import { Counter1 } from "./components/counter-redux";
+import {useDispatch} from "react-redux"
 // import './style.css'
 import './api.css'
 // const App = ()=>{
@@ -134,16 +135,29 @@ import './api.css'
 // };
 
 // --- ecommerce cart
-const App =()=>{
-    return (
-       <div>
-            <ItemCard name="IPhone" price={100000}/>
-            <ItemCard name="Mac" price={200000}/>
-            <ItemCard name="Lid" price={200}/>
-            <ItemCard name="Pen" price={5}/>
+// const App =()=>{
+//     return (
+//        <div>
+//             <ItemCard name="IPhone" price={100000}/>
+//             <ItemCard name="Mac" price={200000}/>
+//             <ItemCard name="Lid" price={200}/>
+//             <ItemCard name="Pen" price={5}/>
 
-            <CartCard />
-       </div>
+//             <CartCard />
+//        </div>
+//     );
+// };
+
+
+// --------- Counter using react-redux
+const App =()=>{
+    const dispatch = useDispatch( );
+    return (
+        <div>
+            <button onClick={e =>{dispatch({type:"INC"})}}>Incriment</button>
+            <Counter1 />
+            <button onClick={e =>{dispatch({type:"DEC"})}}>Decriment</button>
+        </div>
     );
 };
 

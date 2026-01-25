@@ -15,9 +15,24 @@
     - Whenever lifecycle changed of any components then we can inject code with useEffect
     - Run code/fun when lifecycle of comp. changes
 
-- contextAPI : 
+- contextAPI :
+When Custom Hook for contextAPI 
+```
+Component render
+   ↓
+calls useCart()
+   ↓
+useCart calls useContext(CartContext)
+   ↓
+Component subscribes to CartContext
+
+```
 
 # MPA - Multi Page Application
 Dynamic Routing
 /path - absolute path
 path - normal (extensible path)
+
+
+# Redux
+    Solve same problem as contextAPI does
