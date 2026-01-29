@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import reactDom  from 'react-dom/client'
+// -- practice
+
+import PracApp from './pracApp';
+
+
+// --
 import App from "./todo"
 import { ReduxApp } from './app';
 import { CounterProvider } from './context/counter';
@@ -9,6 +15,7 @@ import getPosts, { getPost } from './api/index';
 import {Provider} from 'react-redux';
 import store1 from "./redux/store1"
 import {store} from "./redux/store";
+
 // -- firebase
 
 import {FireBaseApp} from "./fireApp"
@@ -186,9 +193,15 @@ const root = reactDom.createRoot(document.getElementById('root'));
 
 
 // firestore DB
+// root.render(
+//     <React.StrictMode>
+//         <FireStoreApp />
+//     </React.StrictMode>
+// );
+
+
+// ----- practice
 root.render(
-    <React.StrictMode>
-        <FireStoreApp />
-    </React.StrictMode>
+    <PracApp />
 );
 
