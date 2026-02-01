@@ -211,6 +211,113 @@ React scans the tree level-by-level (Breadth-First). When comparing a node from 
 
 # React Fiber @React18+
 # Debouncing
+# Closure + Stall State Problem
+ A closure is simply a function **remembering** the variables that were around when it was created.
+
+When a component renders, React takes a Snapshot (photo) of that exact moment i.e.
+- The props at that moment are frozen in time.
+- The state variables at that moment are frozen in time.
+- The functions (event handlers, effects) defined inside are created inside that snapshot `Closures`.
+
+### Stale State Problem
+Closure capture the initial state/props but are expected to have currect/update values lead to stall state
+```js
+function BrokenCounter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      console.log('Current count is:', count); 
+      setCount(count + 1); 
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []); 
+  return <h1>{count}</h1>;
+}
+```
+
+What happens?
+
+- 0 Seconds: Component Mounts. count is 0.
+
+- Effect Runs: setInterval is created. It forms a closure around count. Inside this closure, count is forever 0.
+
+- 1 Second: Interval runs. setCount(0 + 1). Count becomes 1. Screen updates to 1.
+
+- 2 Seconds: Interval runs again. Crucial Point: This is the same interval created in the first render. It still remembers the count from the first render. It sees count is 0. It runs setCount(0 + 1). Count is still 1.
+
+- Result: The counter flips to 1 and gets stuck there forever.
+
+
+### How to fix stale state problems
+- Use dependency array correctly
+- Use functional state update
+- Use useRef to store latest value
+
+# Referential equality
+Referential equality in React means two variables point to the exact `same object or function in memory`, not just objects that “look” the same.
+
+React often decides whether to re-render or re-run logic using reference comparison not deep comparison.
+```bash
+New object → new reference → dependency changed -> re-rendering
+```
+## useMemo()
+useMemo is used to memoize a computed value so that React can preserve referential equality between renders and avoid unnecessary recalculations or re-renders caused by new object or array references.
+
+ ```js
+ // when to use 
+function App({ num }) {
+  const result = useMemo(() => {
+    console.log("Heavy calculation...");
+    let sum = 0;
+    for (let i = 0; i < 1_000_000_000; i++) {
+      sum += i;
+    }
+    return sum + num;
+  }, [num]);
+
+  return <div>{result}</div>;
+}
+```
+#### Not use when
+- not in dependency array
+- not passed to memoized child
+- not expensive
+
+`Note : useMemo does NOT stop component re-render but it keeps same reference to skips recalculation`
+## useCallback() - function freezor 
+`useCallback` caches a function definition between renders
+- Keep the old version in memory unless the dependencies change
+
+
+## React.memo
+`React.memo` is a Higher Order Component (HOC) that wraps a component to prevent unnecessary re-renders. It render enclosing comp. if and only if `prevProps` !== `newProps`
+### HOC
+```scss
+// HOC - a component/function
+take component → add additional info → return new component
+```
+- When to use
+    - Component is heavy (charts, lists, images)
+    - Component renders many times
+    - Props usually stay the same
+
+`Overall : If the same props come again → don’t re-render the component.`
+
+
+#### Why Need ?
+- By default, a child is re-render if its parent get re-render even if props not change (unnecessary render)
+
+- 🔴 The Trap: If you pass a function or object as a prop to a **React.memo** component without stabilizing it, React.memo fails completely due to refrential equality. 
+
+### Comparison Table | These all are used for optimization
+| Feature | React.memo | useCallback | useMemo |
+|--------|-------------|-------------|---------|
+| What it caches | A rendered component | A function definition | A calculated value |
+| Main goal | Prevent re-rendering | Maintain referential equality | Save calculation time |
+| Use when... | Component is heavy & props rarely change | Passing function to React.memo child | Expensive math OR stable object reference |
+
 # Questions
 What is Layout Thrashing ?
 
@@ -222,3 +329,13 @@ examples of bad side effects in render
 
 why StrictMode double-invokes effects
 what to do for sequential update in single event?
+
+closure + useCallback
+
+closure + useMemo
+
+closure + async/await
+
+
+Is React.memo alone enough and in which conditions?
+What are HOC - Higher Order Components and where to use?

@@ -24,15 +24,20 @@ import { useEffect, useState } from "react";
 
 
 // in case of list 
-export const  Li = ({name})=>{
-    const [id,setId] = useState(name);
-    useEffect(()=>{
-        console.log(name,"Mounted");
-        return ()=>{
-            console.log(name,"Unmounted");
-        };
-    },[]);
-    return (
-        <h1>{name} Li {id}</h1>
-    );
-};
+// export const  Li = ({name})=>{
+//     const [id,setId] = useState(name);
+//     useEffect(()=>{
+//         console.log(name,"Mounted");
+//         return ()=>{
+//             console.log(name,"Unmounted");
+//         };
+//     },[]);
+//     return (
+//         <h1>{name} Li {id}</h1>
+//     );
+// };
+
+
+
+
+
