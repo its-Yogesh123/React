@@ -209,7 +209,7 @@ React scans the tree level-by-level (Breadth-First). When comparing a node from 
 
 
 
-# React Fiber @React18+
+# React Fiber @React16+
 # Debouncing
 # Closure + Stall State Problem
  A closure is simply a function **remembering** the variables that were around when it was created.
@@ -220,6 +220,9 @@ When a component renders, React takes a Snapshot (photo) of that exact moment i.
 - The functions (event handlers, effects) defined inside are created inside that snapshot `Closures`.
 
 ### Stale State Problem
+
+
+
 Closure capture the initial state/props but are expected to have currect/update values lead to stall state
 ```js
 function BrokenCounter() {
@@ -318,6 +321,93 @@ take component → add additional info → return new component
 | Main goal | Prevent re-rendering | Maintain referential equality | Save calculation time |
 | Use when... | Component is heavy & props rarely change | Passing function to React.memo child | Expensive math OR stable object reference |
 
+
+# Controlled vs Uncontrolled Components
+## Controlled Component
+`React is the Single Source of Truth.`
+React manage the value by state ans trigger something on change
+
+```jsx
+const [data,setData] = useState();
+<input value ={data} type="text"
+onChange ={e => {setData(e.target.value)}}
+>
+// 
+```
+why Controlled?
+- Instant Validation
+- like for some text/input we can disble button (live action)
+- search while typing
+
+
+## Uncontrolled Component
+`No single is Source of Truth.`
+DOM store the actual values and react when nedded peak value usinf `ref_variable.current `
+```jsx
+const data = useRef();
+<input ref ={data} type = "text">
+```
+why?
+- Performance ↑ due few re-renders
+
+Use Controlled when:
+- instant validation
+- need to enable/disable buttons
+- need to show live preview
+- need to format input
+- Mostly normal forms
+
+Use Uncontrolled when:
+- Very large forms
+- Simple one-time input
+- File inputs (`<input type="file">`)
+
+## Edge Cases
+
+1. ❌ Forgetting onChange `=>` Render as Readonly 
+
+2. ⚠️ Mixing controlled and uncontrolled `=>` React warning
+    ```html
+    <input defaultValue="abc" value={name} />
+    defaultValue = "abc"   :- Uncontrolled
+    value={name}   :- Controlled
+    ```
+
+3. ⚠️ Setting state to undefined or null `=>` React Warning
+
+    ```scss
+    const [name,setName] = useState();  // name is undefined initially
+    <input value={name} onChange={...} >
+
+    // undefined or null initial values make is uncontrolled
+    // intial value must be there
+
+    const [count,setCount] = useState(0);   // valid
+    ```
+4. Checkbox use `checked` instead of `value`
+5. input type="Number" still string so be carefull while making state
+6. File inputs are always uncontrolled by nature.
+7. `We must choose one style only for single component.`
+
+---
+
+
+## Table
+| Feature | Controlled Component | Uncontrolled Component |
+|--------|----------------------|------------------------|
+| Where is the value stored? | In React state (`useState`) | In the DOM itself |
+| Who controls the input? | React controls it | Browser (DOM) controls it |
+| How to access value? | From state variable | Using ref (`useRef`) |
+| Uses value attribute? | ✅ Yes (`value={state}`) | ❌ No (`defaultValue` instead) |
+| Uses onChange? | ✅ Required | ❌ Not required |
+| Validation | Easy (because value is in state) | Harder (need to read from DOM) |
+| Form submission | Directly from state | Must read from ref |
+| Predictability | High (single source of truth) | Low (DOM & React both involved) |
+| React way? | ✅ Recommended | ⚠ Used in special cases |
+| Performance (big forms) | Slightly slower (many re-renders) | Faster (no re-render per keystroke) |
+
+
+---
 # Questions
 What is Layout Thrashing ?
 
@@ -339,3 +429,5 @@ closure + async/await
 
 Is React.memo alone enough and in which conditions?
 What are HOC - Higher Order Components and where to use?
+
+React Portal
